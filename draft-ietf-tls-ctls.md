@@ -95,19 +95,30 @@ with varints.
 
 cTLS makes use of variable-length integers in order to allow a wide
 integer range while still providing for a minimal encoding. The
-width of the integer is encoded in the first two bits of the field
-as follows, with xs indicating bits that form part of the integer.
+encoding format is borrowed from {{?QUIC=I-D.ietf-quic-transport}},
+and is reproduced below for easy reference.
 
+The variable-length integer encoding reserves the two most significant bits
+of the first byte to encode the base 2 logarithm of the integer encoding length
+in bytes.  The integer value is encoded on the remaining bits, in network byte
+order.
 
-| Bit pattern                | Length (bytes) |
-|:----------------------------|:----------------|
-| 0xxxxxxx                   | 1              |
-|                            |                |
-| 10xxxxxx xxxxxxxx          | 2              |
-|                            |                |
-| 11xxxxxx xxxxxxxx xxxxxxxx | 3              |
+This means that integers are encoded on 1, 2, 4, or 8 bytes and can encode 6-,
+14-, 30-, or 62-bit values respectively.  {{integer-summary}} summarizes the
+encoding properties.
 
-Thus, one byte can be used to carry values up to 127.
+| 2Bit | Length | Usable Bits | Range                 |
+|:-----|:-------|:------------|:----------------------|
+| 00   | 1      | 6           | 0-63                  |
+| 01   | 2      | 14          | 0-16383               |
+| 10   | 4      | 30          | 0-1073741823          |
+| 11   | 8      | 62          | 0-4611686018427387903 |
+{: #integer-summary title="Summary of Integer Encodings"}
+
+For example, the eight-byte sequence c2 19 7c 5e ff 14 e8 8c (in hexadecimal)
+decodes to the decimal value 151288809941952652; the four byte sequence 9d 7f 3e
+7d decodes to 494878333; the two byte sequence 7b bd decodes to 15293; and the
+single byte 25 decodes to 37 (as does the two byte sequence 40 25).
 
 In the TLS syntax variable integers are denoted as "varint" and
 a vector with a top range of a varint is denoted as:
@@ -569,6 +580,8 @@ the value XXXX to the RFC number assigned for this document. ]]
 
 # Sample Transcripts {#transcripts}
 
+[TODO: update these for the new varint format. They may grow a byte or
+two.]
 In this section, we provide annotated example transcripts generated using a
 draft implementation of this specification in the mint TLS library.  The
 transcripts shown are with the revised message formats defined above, as well as
