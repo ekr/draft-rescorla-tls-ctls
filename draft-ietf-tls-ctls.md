@@ -124,7 +124,7 @@ including:
 Values of type uint8, opaque values, and one-byte enums are not
 affected.  We do not show the structures which only change in this way.
 
-## Template-based Specialization
+## Template-based Specialization {#template-specialization}
 
 The transmission overhead in TLS 1.3 is largely contributed to by two factors, 
 :
@@ -457,7 +457,7 @@ Normal DTLS does not provide a mechanism for suppressing the sequence number
 field entirely.  In cases where a sequence number is not required (e.g., when a
 reliable transport is in use), a cTLS implementation may suppress it by setting
 the `suppressSequenceNumber` flag in the compression profile being used (see
-{{specifying-a-specialization}}).  When this flag is enabled, the S bit in the
+{{template-specialization}}).  When this flag is enabled, the S bit in the
 configuration octet MUST be cleared.
 
 
